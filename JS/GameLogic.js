@@ -15,13 +15,18 @@ class GameLogic {
      */
     checkValidMoves(piece) {
         var validMoves = []
+        var target;
         // piece is red
         if (this.#checkRedPiece(piece))
         {
             // piece is soldier
             if (this.#checkSoldier(piece)) 
             {
-    
+                target = this.#checkSoldierCanEat(piece);
+                if (target) 
+                {
+                    return [target];
+                }
                 if (this.#checkRelativeNotOccupied(piece, "left", "bottom"))
                 {
                     validMoves.push(this.#getRelativeCell(piece, "left", "bottom"));
@@ -44,6 +49,11 @@ class GameLogic {
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
+                target = this.#checkSoldierCanEat(piece);
+                if (target) 
+                {
+                    return [target];
+                }
                 if(this.#checkRelativeNotOccupied(piece, "left", "top"))
                 {
                     validMoves.push(this.#getRelativeCell(piece, "left", "top"));
@@ -69,35 +79,88 @@ class GameLogic {
 
     /**
      * 
-     * @param {Piece} piece 
-     * @returns {Piece | null} if the piece can eat returns the piece location, otherwise return null.
+     * @param {*} piece 
+     * @param {*} horizontal 
+     * @param {*} vertical 
      */
-    checkCanEat(piece) 
+    #checkSoldierCanEatRelative(piece, horizontal, vertical)
     {
         // piece is red soldier
-        if (this.#checkRedPiece(piece) && this.#checkSoldier(piece)) 
+        if (this.#checkRedPiece(piece)) 
         {
-            // bottom-left occupied by a blue piece
-            if (!this.#checkRelativeNotOccupied(piece, "left", "bottom")
-            && this.#getRelativePieceColor(piece, "left", "bottom") === "blue")
+            if (vertical === "top")
             {
-                var targetLocation = this.#getRelativeCell(piece,"left", "bottom");
-                var targetRow = targetLocation[0];
-                var targetCol = targetLocation[1];
-                var targetPiece = this.#getPiece(targetRow, targetCol);
-                if (this.#checkRelativeNotOccupied("left", "bottom"))
+                throw("cannot eat backwards.");
+            }
+            // bottom-left occupied by a blue piece
+            if (!this.#checkRelativeNotOccupied(piece, horizontal, vertical)
+            && this.#getRelativePieceColor(piece, horizontal, vertical) === "blue")
+            {
+                var targetPiece = this.#getRelativePiece(piece, horizontal, vertical);
+                // can eat the target piece
+                if (this.#checkRelativeNotOccupied(targetPiece, horizontal, vertical))
                 {
                     return targetPiece;
                 }
             }
-            // bottom-right occupie by a blue piece
-            
         }
-        // piece is blue
-        else
+        // piece is blue soldier
+        else 
         {
-
+            if (vertical === "bottom")
+            {
+                throw("cannot eat backwards");
+            }
+            // bottom-left occupied by a blue piece
+            if (!this.#checkRelativeNotOccupied(piece, horizontal, vertical)
+            && this.#getRelativePieceColor(piece, horizontal, vertical) === "red")
+            {
+                var targetPiece = this.#getRelativePiece(piece, horizontal, vertical);
+                // can eat the target piece
+                if (this.#checkRelativeNotOccupied(targetPiece, horizontal, vertical))
+                {
+                    return targetPiece;
+                }
+            }
         }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param {Piece} piece 
+     * @returns {Piece | null} if the piece can eat returns the piece location, otherwise return null.
+     */
+    #checkSoldierCanEat(piece) 
+    {
+        var target;
+        if (this.#checkRedPiece(piece))
+        {
+            target = this.#checkSoldierCanEatRelative("left", "bottom");
+            if (target)
+            {
+                return target;
+            }
+            target = this.#checkSoldierCanEatRelative("right", "bottom");
+            if(target)
+            {
+                return target;
+            }
+        }
+        else 
+        {
+            target = this.#checkSoldierCanEatRelative("left", "top");
+            if (target)
+            {
+                return target;
+            }
+            target = this.#checkSoldierCanEatRelative("right", "top");
+            if(target)
+            {
+                return target;
+            }
+        }
+        return null;
     }
 
     /** Checkers and getters for cells specifically */
@@ -194,7 +257,7 @@ class GameLogic {
         var cellLocation = this.#getRelativeCell(piece, horizontal, vertical);
         var targetRow = cellLocation[0];
         var targetCol = cellLocation[1];
-        return 
+        return this.#getPiece(targetRow, targetCol);
         
     }
     /**

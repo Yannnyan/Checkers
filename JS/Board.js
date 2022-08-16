@@ -18,6 +18,7 @@ class Board {
         this.#ocupyCells();
         // it is selected if the user has clicked on the piece
         this.targetedPiece = null;
+        this.logic = new GameLogic(this);
     }
 
     /** Constructor helpers */
@@ -105,7 +106,9 @@ class Board {
      */
     #clickTheCell(cellId) {
         alert("You clicked on a cell " + cellId);
-        
+        var cell = this.#getCellById(cellId);
+
+
     }
     /**private auxilary functions */
     /**
@@ -170,6 +173,25 @@ class Board {
             }
         }
         return NaN;
+    }
+    /**
+     * 
+     * @param {string} cellId 
+     * @returns 
+     */
+    #getCellRowById(cellId)
+    {
+        return parseInt(cellId.charAt(1));
+    }
+    #getCellColById(cellId)
+    {
+        return parseInt(cellId.charAt(2));
+    }
+    #getCellById(cellId)
+    {
+        var row = this.#getCellRowById;
+        var col = this.#getCellColById;
+        return this.cells[row][col];
     }
     
 
