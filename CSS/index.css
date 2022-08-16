@@ -1,0 +1,62 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: red;
+}
+.headColor {
+    background-color: #87523d;
+}
+
+div#tableDiv {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    /* margin: 100px; */
+    background-color: wheat;
+    
+}
+table {
+    float: top;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+    border-spacing: 0;
+    
+}
+th.top {
+    padding: 5px 20px 5px 5px;
+}
+th.side {
+    padding: 10px;
+}
+
+td.black {
+    background-color: black;
+    text-align: center;
+    padding-top: 5px;
+}
+
+
+td.white {
+    background-color: white;
+}
+
+span.redCircle {
+  height: 25px;
+  width: 25px;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+span.blueCircle {
+  height: 25px;
+  width: 25px;
+  background-color: blue;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+
+
