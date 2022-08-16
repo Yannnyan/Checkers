@@ -1,0 +1,2 @@
+# Checkers
+Web checkers
