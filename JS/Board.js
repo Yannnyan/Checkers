@@ -8,25 +8,10 @@ class Board extends BoardRaw{
         super();
         this.view = new changeBoard();
         this.#attachCells();
-        this.#attachPieces();   
         // it is selected if the user has clicked on the piece
         this.targetedPiece = null;
         this.logic = new GameLogic(this);
         
-    }
-    /**
-     * attaches the pieces to event listeners
-     */
-    #attachPieces() 
-    {
-        for (var i = 0; i < this.redPieces.length; i++)
-        {
-            this.#attachPiece(this.redPieces[i], i);
-        }
-        for (var i = 0; i < this.bluePieces.length; i++)
-        {
-            this.#attachPiece(this.bluePieces[i], i);
-        }
     }
     /**
      * attaches the cells to event listeners
@@ -55,21 +40,31 @@ class Board extends BoardRaw{
     #targetThePiece(pieceId) {
         var tPiece = this.getPieceById(pieceId);
         this.targetedPiece = tPiece;
-
+        console.log("piece targeted");
     }
     /** This is the event listener that activates when the user clicks on a cell
      * 
      * @param {string} cellId 
      */
-    #clickTheCell(cellId) {
-        // alert("You clicked on a cell " + cellId);
-        var cell = this.getCellById(cellId);
-        if (this.targetedPiece) // piece not null
+    #clickTheCell(Id) {        
+        // the target is a cell
+        if (Id.indexOf("c") === 0)
         {
-            console.log(this.targetedPiece);
-            this.movePiece(this.targetedPiece, cell);
+            var cell = this.getCellById(Id);
+            if (this.targetedPiece) // piece not null
+            {
+                console.log(this.targetedPiece);
+                this.movePiece(this.targetedPiece, cell);
+            }
+            this.targetedPiece = null;
         }
-        this.targetedPiece = null;
+        // the target is a piece
+        else
+        {
+            this.#targetThePiece(Id);
+        }
+        
+        
     }
     /**private auxilary functions */
     /**
@@ -82,22 +77,6 @@ class Board extends BoardRaw{
             e.stopPropagation();
             console.log(e.target.id + "has been clicked ")
             this.#clickTheCell(e.target.id);
-        });
-    }
-    
-    /**
-     * Attaches the span circle in the html to the js object
-     * @param {Piece} p 
-     * @param {Int} index 
-     */
-    #attachPiece(p, index) {
-        this.validateIndex(index);
-        var pieceSpan = changeBoard.getPieceElement(p, index);
-        pieceSpan.addEventListener("click", e => {
-            e.stopPropagation();
-            console.log(e.target.id + " has been clicked.");
-            this.#targetThePiece(e.target.id);
-            
         });
     }
     

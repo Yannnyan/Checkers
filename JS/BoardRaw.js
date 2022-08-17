@@ -231,8 +231,14 @@ class BoardRaw {
     {
         return parseInt(cellId.charAt(2));
     }
+    /**
+     * 
+     * @param {string} cellId 
+     * @returns {Cell} cell that matches the specified id
+     */
     getCellById(cellId)
     {
+        console.log(cellId + " kdsak");
         var row = this.#getCellRowById(cellId);
         var col = this.#getCellColById(cellId);
         return this.cells[row][col];
@@ -245,8 +251,6 @@ class BoardRaw {
      */
     getCell(row, col)
     {
-        console.log(row + " " + col);
-        console.log(this.cells[row][col]);
         return this.cells[row][col];
     }
 
