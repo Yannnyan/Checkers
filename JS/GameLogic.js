@@ -13,7 +13,7 @@ class GameLogic {
      * 
      * @param {Piece} piece 
      */
-    checkValidMoves(piece) {
+    getValidMoves(piece) {
         var validMoves = []
         var target;
         // piece is red
@@ -27,13 +27,13 @@ class GameLogic {
                 {
                     return [target];
                 }
-                if (this.#checkRelativeNotOccupied(piece, "left", "bottom"))
+                if (this.board.checkRelativeNotOccupied(piece, "left", "bottom"))
                 {
-                    validMoves.push(this.#getRelativeCell(piece, "left", "bottom"));
+                    validMoves.push(this.board.getRelativeCell(piece, "left", "bottom"));
                 }
-                if (this.#checkRelativeNotOccupied(piece, "right", "bottom")) 
+                if (this.board.checkRelativeNotOccupied(piece, "right", "bottom")) 
                 {
-                    validMoves.push(this.#getRelativeCell(piece, "right", "bottom"));
+                    validMoves.push(this.board.getRelativeCell(piece, "right", "bottom"));
                 }
             
             }
@@ -49,18 +49,18 @@ class GameLogic {
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
-                target = this.#checkSoldierCanEat(piece);
+                target = this.board.checkSoldierCanEat(piece);
                 if (target) 
                 {
                     return [target];
                 }
-                if(this.#checkRelativeNotOccupied(piece, "left", "top"))
+                if(this.board.checkRelativeNotOccupied(piece, "left", "top"))
                 {
-                    validMoves.push(this.#getRelativeCell(piece, "left", "top"));
+                    validMoves.push(this.board.getRelativeCell(piece, "left", "top"));
                 }
-                if (this.#checkRelativeNotOccupied(piece, "right", "top"))
+                if (this.board.checkRelativeNotOccupied(piece, "right", "top"))
                 {
-                    validMoves.push(this.#getRelativeCell(piece, "right", "top"));
+                    validMoves.push(this.board.getRelativeCell(piece, "right", "top"));
                 }
             }
             // piece is queen
@@ -69,9 +69,9 @@ class GameLogic {
                 // add cases for queen.
             }
         }
+        return validMoves;
        
         
-
     }
 
 
@@ -82,6 +82,7 @@ class GameLogic {
      * @param {*} piece 
      * @param {*} horizontal 
      * @param {*} vertical 
+     * @returns {Piece | null} the piece that is can eat, null if it cannot eat.
      */
     #checkSoldierCanEatRelative(piece, horizontal, vertical)
     {
@@ -93,12 +94,12 @@ class GameLogic {
                 throw("cannot eat backwards.");
             }
             // bottom-left occupied by a blue piece
-            if (!this.#checkRelativeNotOccupied(piece, horizontal, vertical)
-            && this.#getRelativePieceColor(piece, horizontal, vertical) === "blue")
+            if (!this.board.checkRelativeNotOccupied(piece, horizontal, vertical)
+            && this.board.getRelativePieceColor(piece, horizontal, vertical) === "blue")
             {
-                var targetPiece = this.#getRelativePiece(piece, horizontal, vertical);
+                var targetPiece = this.board.getRelativePiece(piece, horizontal, vertical);
                 // can eat the target piece
-                if (this.#checkRelativeNotOccupied(targetPiece, horizontal, vertical))
+                if (this.board.checkRelativeNotOccupied(targetPiece, horizontal, vertical))
                 {
                     return targetPiece;
                 }
@@ -112,12 +113,12 @@ class GameLogic {
                 throw("cannot eat backwards");
             }
             // bottom-left occupied by a blue piece
-            if (!this.#checkRelativeNotOccupied(piece, horizontal, vertical)
-            && this.#getRelativePieceColor(piece, horizontal, vertical) === "red")
+            if (!this.board.checkRelativeNotOccupied(piece, horizontal, vertical)
+            && this.board.getRelativePieceColor(piece, horizontal, vertical) === "red")
             {
-                var targetPiece = this.#getRelativePiece(piece, horizontal, vertical);
+                var targetPiece = this.board.getRelativePiece(piece, horizontal, vertical);
                 // can eat the target piece
-                if (this.#checkRelativeNotOccupied(targetPiece, horizontal, vertical))
+                if (this.board.checkRelativeNotOccupied(targetPiece, horizontal, vertical))
                 {
                     return targetPiece;
                 }
@@ -136,12 +137,12 @@ class GameLogic {
         var target;
         if (this.#checkRedPiece(piece))
         {
-            target = this.#checkSoldierCanEatRelative("left", "bottom");
+            target = this.board.checkSoldierCanEatRelative("left", "bottom");
             if (target)
             {
                 return target;
             }
-            target = this.#checkSoldierCanEatRelative("right", "bottom");
+            target = this.board.checkSoldierCanEatRelative("right", "bottom");
             if(target)
             {
                 return target;
@@ -149,12 +150,12 @@ class GameLogic {
         }
         else 
         {
-            target = this.#checkSoldierCanEatRelative("left", "top");
+            target = this.board.checkSoldierCanEatRelative("left", "top");
             if (target)
             {
                 return target;
             }
-            target = this.#checkSoldierCanEatRelative("right", "top");
+            target = this.board.checkSoldierCanEatRelative("right", "top");
             if(target)
             {
                 return target;
@@ -165,101 +166,6 @@ class GameLogic {
 
     /** Checkers and getters for cells specifically */
 
-    #checkCellNotOccupied(row, col) 
-    {
-        if (row > this.board.rows || col > this.board.cols ||
-            row < 0 || col < 0)
-        {
-            return null;
-        }
-        return !this.board.cells[row][col].isOccupied();
-    }
-    /**
-     * 
-     * @param {Piece} piece 
-     * @param {string} horizontal "left", "right"
-     * @param {string} vertical "top", "bottom"
-     * @returns if the bottom left cell is not occupied
-     */
-    #checkRelativeNotOccupied(piece, horizontal, vertical) 
-    {
-        if (horizontal === "left" && vertical === "top")
-        {
-            return this.#checkCellNotOccupied(piece.row - 1, piece.col - 1);
-        }
-        else if (horizontal === "right" && vertical === "top")
-        {
-            return this.#checkCellNotOccupied(piece.row - 1, piece.col + 1);
-        }
-        else if (horizontal === "left" && vertical === "bottom")
-        {
-            return this.#checkCellNotOccupied(piece.row + 1, piece.col - 1);
-        }
-        else if (horizontal === "right" && vertical === "bottom")
-        {
-            return this.#checkCellNotOccupied(piece.row + 1, piece.col + 1);
-        }
-        throw("invalid horizontal or vertical argument");
-        
-    }
-    /**
-     * 
-     * @param {Piece} piece 
-     * @param {string} horizontal "left", "right"
-     * @param {string} vertical "top", "bottom" 
-     * @returns the color of the piece specified at the horizontal and vertical positions
-     */
-    #getRelativePieceColor(piece, horizontal, vertical) 
-    {
-        var cellLocation = this.#getRelativeCell(piece, horizontal, vertical);
-        var cellRow = cellLocation[0];
-        var cellCol = cellLocation[1];
-        var color = this.#getPiece(cellRow, cellCol).color;
-        return color;
-    }
-    #getRelativeCell(piece, horizontal, vertical) 
-    {
-        if (horizontal === "left" && vertical === "top")
-        {
-            return [piece.row - 1, piece.collum - 1];
-        }
-        else if (horizontal === "right" && vertical === "top")
-        {
-            return [piece.row - 1, piece.collum + 1];
-        }
-        else if (horizontal === "left" && vertical === "bottom")
-        {
-            return [piece.row + 1, piece.collum - 1];
-        }
-        else if (horizontal === "right" && vertical === "bottom")
-        {
-            return [piece.row + 1, piece.collum + 1];
-        }
-        throw("invalid horizontal or vertical argument");
-    }
-    #getPiece(row, col)
-    {
-        if (row > this.board.rows || col > this.board.cols
-            || row < 0 || col < 0)
-        {
-            return null;
-        }
-        return this.board.cells[row][col].occupied;
-    }
-    /**
-     * 
-     * @param {Piece} piece 
-     * @param {string} horizontal 
-     * @param {string} vertical 
-     */
-    #getRelativePiece(piece, horizontal, vertical)
-    {
-        var cellLocation = this.#getRelativeCell(piece, horizontal, vertical);
-        var targetRow = cellLocation[0];
-        var targetCol = cellLocation[1];
-        return this.#getPiece(targetRow, targetCol);
-        
-    }
     /**
      * 
      * @param {Piece} piece 

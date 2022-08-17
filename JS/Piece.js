@@ -14,6 +14,22 @@ class Piece {
     makeQueen() {
         this.role = "queen";
     }
+    get getCollum()
+    {
+        return this.collum;
+    }
+    get getRow()
+    {
+        return this.row;
+    }
+    get getColor()
+    {
+        return this.color;
+    }
+    get getRole()
+    {
+        return this.role;
+    }
 }
 
 
