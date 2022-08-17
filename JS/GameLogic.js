@@ -15,17 +15,17 @@ class GameLogic {
      */
     getValidMoves(piece) {
         var validMoves = []
-        var target;
+        var targetCell;
         // piece is red
         if (this.#checkRedPiece(piece))
         {
             // piece is soldier
             if (this.#checkSoldier(piece)) 
             {
-                target = this.#checkSoldierCanEat(piece);
-                if (target) 
+                targetCell = this.#checkSoldierCanEat(piece);
+                if (targetCell) 
                 {
-                    return [target];
+                    return [targetCell];
                 }
                 if (this.board.checkRelativeNotOccupied(piece, "left", "bottom"))
                 {
@@ -49,10 +49,10 @@ class GameLogic {
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
-                target = this.board.checkSoldierCanEat(piece);
-                if (target) 
+                targetCell = this.#checkSoldierCanEat(piece);
+                if (targetCell) 
                 {
-                    return [target];
+                    return [targetCell];
                 }
                 if(this.board.checkRelativeNotOccupied(piece, "left", "top"))
                 {
@@ -82,7 +82,7 @@ class GameLogic {
      * @param {*} piece 
      * @param {*} horizontal 
      * @param {*} vertical 
-     * @returns {Piece | null} the piece that is can eat, null if it cannot eat.
+     * @returns [row, col, "eat"] | null the cell that must be occupied after eat, null if it cannot eat.
      */
     #checkSoldierCanEatRelative(piece, horizontal, vertical)
     {
@@ -101,7 +101,11 @@ class GameLogic {
                 // can eat the target piece
                 if (this.board.checkRelativeNotOccupied(targetPiece, horizontal, vertical))
                 {
-                    return targetPiece;
+                    var ret = this.board.getRelativeCell(targetPiece, horizontal, vertical);
+                    ret[2] = "eat";
+                    ret[3] = targetPiece.row;
+                    ret[4] = targetPiece.collum;
+                    return ret;
                 }
             }
         }
@@ -120,7 +124,11 @@ class GameLogic {
                 // can eat the target piece
                 if (this.board.checkRelativeNotOccupied(targetPiece, horizontal, vertical))
                 {
-                    return targetPiece;
+                    var ret = this.board.getRelativeCell(targetPiece, horizontal, vertical);
+                    ret[2] = "eat";
+                    ret[3] = targetPiece.row;
+                    ret[4] = targetPiece.collum;
+                    return ret;
                 }
             }
         }
@@ -130,19 +138,21 @@ class GameLogic {
     /**
      * 
      * @param {Piece} piece 
-     * @returns {Piece | null} if the piece can eat returns the piece location, otherwise return null.
+     * @returns [dest-row, dest-col, "eat", eat-row, eat-col] | null 
+     * if the piece can eat returns the cell that must be occupied after the eat, and the cell that must be eaten
+     *  otherwise return null.
      */
     #checkSoldierCanEat(piece) 
     {
         var target;
         if (this.#checkRedPiece(piece))
         {
-            target = this.board.checkSoldierCanEatRelative("left", "bottom");
+            target = this.#checkSoldierCanEatRelative(piece, "left", "bottom");
             if (target)
             {
                 return target;
             }
-            target = this.board.checkSoldierCanEatRelative("right", "bottom");
+            target = this.#checkSoldierCanEatRelative(piece, "right", "bottom");
             if(target)
             {
                 return target;
@@ -150,12 +160,12 @@ class GameLogic {
         }
         else 
         {
-            target = this.board.checkSoldierCanEatRelative("left", "top");
+            target = this.#checkSoldierCanEatRelative(piece, "left", "top");
             if (target)
             {
                 return target;
             }
-            target = this.board.checkSoldierCanEatRelative("right", "top");
+            target = this.#checkSoldierCanEatRelative(piece, "right", "top");
             if(target)
             {
                 return target;
@@ -187,7 +197,7 @@ class GameLogic {
     {
         if (piece.color !== "red" && piece.color !== "blue")
         {
-            throw("piece color is not red or blue.");
+            throw("piece color is not red nor blue.");
         }
         return piece.color === "red";
     }

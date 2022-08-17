@@ -10,7 +10,10 @@ class Board extends BoardRaw{
         this.#attachCells();
         // it is selected if the user has clicked on the piece
         this.targetedPiece = null;
+        // array that contains all the valid moves for the targeted piece
+        this.validMoves = null;
         this.logic = new GameLogic(this);
+        
         
     }
     /**
@@ -29,6 +32,15 @@ class Board extends BoardRaw{
                 
         }
     }
+    /**
+     * adds valid moves to the targeted piece.
+     * later add function to display the relevant spots on the board
+     */
+    #addValidMoves()
+    {
+        if (this.targetedPiece)
+            this.validMoves = this.logic.getValidMoves(this.targetedPiece);
+    }
     
     /** Event Listeners */
 
@@ -40,8 +52,8 @@ class Board extends BoardRaw{
     #targetThePiece(pieceId) {
         var tPiece = this.getPieceById(pieceId);
         this.targetedPiece = tPiece;
-        console.log(this.targetedPiece);
-        console.log("piece targeted");
+        this.#addValidMoves();
+
     }
     /** This is the event listener that activates when the user clicks on a cell
      * 
@@ -54,8 +66,22 @@ class Board extends BoardRaw{
             var cell = this.getCellById(Id);
             if (this.targetedPiece) // piece not null
             {
-                
-                this.movePiece(this.targetedPiece, cell);
+                console.log(this.validMoves);
+                if (this.validMoves.length != 0)
+                {
+                    // iterates through each valid move
+                    for(let i = 0; i < this.validMoves.length; i++)
+                        if (cell.row === this.validMoves[i][0] && cell.col === this.validMoves[i][1])
+                        {
+                            this.movePiece(this.targetedPiece, cell);
+                            // check eat flag, if it's on then delete the eaten piece
+                            if (this.validMoves[i][2] === "eat")
+                            {
+                                this.deletePiece(this.getPiece(this.validMoves[i][3], this.validMoves[i][4]));
+                            }
+                            break;
+                        }
+                }
             }
             this.targetedPiece = null;
         }
@@ -76,7 +102,6 @@ class Board extends BoardRaw{
         var cell = changeBoard.getCellElement(row, col);
         cell.addEventListener("click", e => { // inserting event listener
             e.stopPropagation();
-            console.log(e.target.id + "has been clicked ")
             this.#clickTheCell(e.target.id);
         });
     }
@@ -100,6 +125,16 @@ class Board extends BoardRaw{
          piece.movePiece(cellToMoveTo.row, cellToMoveTo.col);
          // update view
          
+     }
+     /**
+      * Deletes the specified piece from the board.
+      * @param {Piece} piece 
+      */
+     deletePiece(piece)
+     {
+        var cell = this.getCell(piece.row, piece.collum);
+        changeBoard.delPiece(cell.row, cell.col); // update view.
+        cell.unoccupy();
      }
 
 }

@@ -15,7 +15,17 @@ class changeBoard {
         this.getCellElement(row, col).innerHTML = "";
         
     }
-
+    /**
+     * Deletes the piece from the board
+     * @param {int} row 
+     * @param {int} col 
+     */
+    static delPiece(row, col)
+    {
+        console.log("Eating the piece with coordinates: ");
+        console.log(row +" " + col);
+        this.getCellElement(row, col).innerHTML = "";
+    }
     /**
      * 
      * @param {int} row 

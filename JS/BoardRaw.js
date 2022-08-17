@@ -117,12 +117,12 @@ class BoardRaw {
      */
     getPiece(row, col)
     {
-        if (row > this.board.rows || col > this.board.cols
+        if (row > this.rows || col > this.cols
             || row < 0 || col < 0)
         {
             return null;
         }
-        return this.board.cells[row][col].occupied;
+        return this.getCell(row, col).occupied;
     }
 
     /**
@@ -146,7 +146,7 @@ class BoardRaw {
      * @param {Piece} piece 
      * @param {string} horizontal "left", "right"
      * @param {string} vertical "top", "bottom" 
-     * @returns the color of the piece specified at the horizontal and vertical positions
+     * @returns {string} the color of the piece specified at the horizontal and vertical positions
      */
     getRelativePieceColor(piece, horizontal, vertical) 
     {
@@ -163,29 +163,36 @@ class BoardRaw {
      * @param {Piece} piece 
      * @param {string} horizontal "left", "right"
      * @param {string} vertical "top", "bottom"
-     * @returns if the bottom left cell is not occupied
+     * @returns [row, col] if the bottom left cell is not occupied
      */
     checkRelativeNotOccupied(piece, horizontal, vertical) 
      {
          if (horizontal === "left" && vertical === "top")
          {
-             return this.checkCellNotOccupied(piece.row - 1, piece.col - 1);
+             return this.checkCellNotOccupied(piece.row - 1, piece.collum - 1);
          }
          else if (horizontal === "right" && vertical === "top")
          {
-             return this.checkCellNotOccupied(piece.row - 1, piece.col + 1);
+             return this.checkCellNotOccupied(piece.row - 1, piece.collum + 1);
          }
          else if (horizontal === "left" && vertical === "bottom")
          {
-             return this.checkCellNotOccupied(piece.row + 1, piece.col - 1);
+             return this.checkCellNotOccupied(piece.row + 1, piece.collum - 1);
          }
          else if (horizontal === "right" && vertical === "bottom")
          {
-             return this.checkCellNotOccupied(piece.row + 1, piece.col + 1);
+             return this.checkCellNotOccupied(piece.row + 1, piece.collum + 1);
          }
          throw("invalid horizontal or vertical argument");
          
      }
+     /**
+      * 
+      * @param {Piece} piece 
+      * @param {string} horizontal 
+      * @param {string} vertical 
+      * @returns [row, col] array of two integers representing a cell.
+      */
     getRelativeCell(piece, horizontal, vertical) 
     {
         if (horizontal === "left" && vertical === "top")
@@ -206,15 +213,20 @@ class BoardRaw {
         }
         throw("invalid horizontal or vertical argument");
     }
-
+    /**
+     * 
+     * @param {int} row 
+     * @param {int} col 
+     * @returns {Boolean} if the cell specified is not occupied
+     */
     checkCellNotOccupied(row, col) 
     {
-        if (row > this.board.rows || col > this.board.cols ||
+        if (row > this.rows || col > this.cols ||
             row < 0 || col < 0)
         {
             return null;
         }
-        return !this.board.cells[row][col].isOccupied();
+        return !this.getCell(row, col).isOccupied();
     }
 
     /**
