@@ -40,6 +40,7 @@ class Board extends BoardRaw{
     #targetThePiece(pieceId) {
         var tPiece = this.getPieceById(pieceId);
         this.targetedPiece = tPiece;
+        console.log(this.targetedPiece);
         console.log("piece targeted");
     }
     /** This is the event listener that activates when the user clicks on a cell
@@ -53,7 +54,7 @@ class Board extends BoardRaw{
             var cell = this.getCellById(Id);
             if (this.targetedPiece) // piece not null
             {
-                console.log(this.targetedPiece);
+                
                 this.movePiece(this.targetedPiece, cell);
             }
             this.targetedPiece = null;
@@ -92,7 +93,6 @@ class Board extends BoardRaw{
      movePiece(piece, cellToMoveTo)
      {
          var cell = this.getCell(piece.row, piece.collum);
-         console.log(cell);
          changeBoard.movePiece(piece.row, piece.collum, cellToMoveTo.row, cellToMoveTo.col);
          
          cell.unoccupy();

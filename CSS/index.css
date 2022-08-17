@@ -40,6 +40,8 @@ td.black {
 
 td.white {
     background-color: white;
+    text-align: center;
+    padding-top: 5px;
 }
 
 span.redCircle {

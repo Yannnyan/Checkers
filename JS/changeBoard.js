@@ -6,6 +6,7 @@ class changeBoard {
 
     static movePiece(row , col, rowToMoveTo, colToMoveTo)
     {
+        console.log("Moving piece with the coordinates: ");
         console.log(row + " " + col + " " + rowToMoveTo + " " + colToMoveTo)
         console.log(this.getCellElement(row, col));
         console.log(this.getCellElement(rowToMoveTo, colToMoveTo));

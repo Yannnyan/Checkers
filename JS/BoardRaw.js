@@ -96,7 +96,6 @@ class BoardRaw {
         if (pieceId.indexOf("red") !== -1) {
            index = parseInt(pieceId.slice(9)); // redCircle 
            if(!isNaN(index)) {
-            console.log(this.redPieces[index]);
             return this.redPieces[index];
            }
         }
@@ -238,7 +237,6 @@ class BoardRaw {
      */
     getCellById(cellId)
     {
-        console.log(cellId + " kdsak");
         var row = this.#getCellRowById(cellId);
         var col = this.#getCellColById(cellId);
         return this.cells[row][col];

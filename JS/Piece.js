@@ -9,7 +9,7 @@ class Piece {
     }
     movePiece(rowToMoveTo, colToMoveTo) {
         this.row = rowToMoveTo;
-        this.col = colToMoveTo;
+        this.collum = colToMoveTo;
     }
     makeQueen() {
         this.role = "queen";
