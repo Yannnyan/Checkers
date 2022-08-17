@@ -71,6 +71,7 @@ class Board extends BoardRaw{
                 {
                     // iterates through each valid move
                     for(let i = 0; i < this.validMoves.length; i++)
+                        // user selected cell is in valid moves array, then move it
                         if (cell.row === this.validMoves[i][0] && cell.col === this.validMoves[i][1])
                         {
                             this.movePiece(this.targetedPiece, cell);
@@ -79,6 +80,8 @@ class Board extends BoardRaw{
                             {
                                 this.deletePiece(this.getPiece(this.validMoves[i][3], this.validMoves[i][4]));
                             }
+                            // makes a turn after moving a piece
+                            this.logic.turnHandler.makeTurn();
                             break;
                         }
                 }
@@ -135,6 +138,17 @@ class Board extends BoardRaw{
         var cell = this.getCell(piece.row, piece.collum);
         changeBoard.delPiece(cell.row, cell.col); // update view.
         cell.unoccupy();
+        if (piece.color === "red")
+        {
+            this.redPieces.splice(this.redPieces.indexOf(piece), 1);
+            console.log(this.redPieces);
+        }
+        else 
+        {
+            this.bluePieces.splice(this.redPieces.indexOf(piece), 1);
+            console.log(this.bluePieces);
+        }
+        
      }
 
 }

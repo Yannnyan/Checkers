@@ -117,10 +117,10 @@ class BoardRaw {
      */
     getPiece(row, col)
     {
-        if (row > this.rows || col > this.cols
+        if (row >= this.rows || col >= this.cols
             || row < 0 || col < 0)
         {
-            return null;
+            throw("out-of-bounds");
         }
         return this.getCell(row, col).occupied;
     }
@@ -163,7 +163,7 @@ class BoardRaw {
      * @param {Piece} piece 
      * @param {string} horizontal "left", "right"
      * @param {string} vertical "top", "bottom"
-     * @returns [row, col] if the bottom left cell is not occupied
+     * @returns {Boolean} true if the bottom left cell is not occupied
      */
     checkRelativeNotOccupied(piece, horizontal, vertical) 
      {
@@ -222,9 +222,10 @@ class BoardRaw {
     checkCellNotOccupied(row, col) 
     {
         if (row > this.rows || col > this.cols ||
-            row < 0 || col < 0)
+            row < 0 || col < 0
+            || !this.getCell(row, col))
         {
-            return null;
+            return false;
         }
         return !this.getCell(row, col).isOccupied();
     }

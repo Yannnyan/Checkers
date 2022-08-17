@@ -8,6 +8,7 @@ class GameLogic {
      */
     constructor (board) {
         this.board = board;
+        this.turnHandler = new TurnHandler();
     }
     /**
      * 
@@ -16,9 +17,23 @@ class GameLogic {
     getValidMoves(piece) {
         var validMoves = []
         var targetCell;
-        // piece is red
-        if (this.#checkRedPiece(piece))
+        // piece is red and it's red's turn
+        if (this.#checkRedPiece(piece) && this.turnHandler.isRedTurn())
         {
+            // must eat mechanism
+
+            // this is the piece that is eating the other piece
+            // i.e the one that the user should select
+            let eatingPiece = this.#checkHasToEat(); 
+            if (eatingPiece === piece && eatingPiece) // not null, and eat piece is the piece that is targeted
+            {
+                return [this.#checkSoldierCanEat(piece)];
+            }
+            else if (eatingPiece !== piece && eatingPiece) // must eat the piece
+            {
+                return [];
+            }
+
             // piece is soldier
             if (this.#checkSoldier(piece)) 
             {
@@ -43,9 +58,23 @@ class GameLogic {
                 // add cases for queen
             }
         }
-        // piece is blue
-        else
+        // piece is blue, and it's blue's turn
+        else if (!this.#checkRedPiece(piece) && !this.turnHandler.isRedTurn())
         {
+            // must eat mechanism
+
+            // this is the piece that is eating the other piece
+            // i.e the one that the user should select
+            let eatingPiece = this.#checkHasToEat(); 
+            if (eatingPiece === piece && eatingPiece) // not null, and eat piece is the piece that is targeted
+            {
+                return [this.#checkSoldierCanEat(piece)];
+            }
+            else if (eatingPiece !== piece && eatingPiece) // must eat the piece
+            {
+                return [];
+            }
+            
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
@@ -77,6 +106,23 @@ class GameLogic {
 
     /** Check soldier operations */
 
+    /**
+     * Checks if one of the pieces of the current team color has to eat
+     * @returns {Piece | null}the piece that has to eat or null;
+     */
+    #checkHasToEat()
+    {
+        var arr = this.turnHandler.isRedTurn() ? this.board.redPieces : this.board.bluePieces;
+        for (let i = 0; i < arr.length; i++)
+        {
+            if (this.#checkSoldierCanEat(arr[i]))
+            {
+                // returns the piece that has to eat
+                return arr[i];
+            }
+        }
+        return null;
+    }
     /**
      * 
      * @param {*} piece 
@@ -147,29 +193,72 @@ class GameLogic {
         var target;
         if (this.#checkRedPiece(piece))
         {
-            target = this.#checkSoldierCanEatRelative(piece, "left", "bottom");
-            if (target)
+            try
             {
-                return target;
+                target = this.#checkSoldierCanEatRelative(piece, "left", "bottom");
+                if (target)
+                {
+                    return target;
+                }
             }
-            target = this.#checkSoldierCanEatRelative(piece, "right", "bottom");
-            if(target)
+            // expecting exception for out of bounds
+            catch(e)
             {
-                return target;
+                if (!(e === "out-of-bounds")) // if it's not out of bounds
+                {
+                    throw(e);
+                }
+            }
+            try
+            {
+                target = this.#checkSoldierCanEatRelative(piece, "right", "bottom");
+                if(target)
+                {
+                    return target;
+                }
+            }
+            catch(e)
+            {
+                if (!(e === "out-of-bounds")) // if it's not out of bounds
+                {
+                    throw(e);
+                }
             }
         }
         else 
         {
-            target = this.#checkSoldierCanEatRelative(piece, "left", "top");
-            if (target)
+            // expecting exception for out of bounds
+            try
             {
-                return target;
+                target = this.#checkSoldierCanEatRelative(piece, "left", "top");
+                if (target)
+                {
+                    return target;
+                }
             }
-            target = this.#checkSoldierCanEatRelative(piece, "right", "top");
-            if(target)
+            catch(e)
             {
-                return target;
+                if (!(e === "out-of-bounds")) // if it's not out of bounds
+                {
+                    throw(e);
+                }
             }
+            try
+            {
+                target = this.#checkSoldierCanEatRelative(piece, "right", "top");
+                if(target)
+                {
+                    return target;
+                }
+            }
+            catch(e)
+            {
+                if (!(e === "out-of-bounds")) // if it's not out of bounds
+                {
+                    throw(e);
+                }
+            }
+            
         }
         return null;
     }
@@ -206,7 +295,36 @@ class GameLogic {
 
 
 
+class TurnHandler{
+    constructor() 
+    {
+        this.turn = "blue";
+    }
+    // makes a turn, switching the current turn to opposite color
+    makeTurn()
+    {
+        switch (this.turn)
+        {
+            case "red":
+                this.turn = "blue";
+                break;
+            case "blue":
+                this.turn = "red";
+                break;
+            default:
+                throw("invalid color");
+        }
+    }
+    /**
+     * 
+     * @returns if the current turn is red's
+     */
+    isRedTurn()
+    {
+        return this.turn === "red";
+    }
 
+}
 
 
 
