@@ -17,6 +17,7 @@ class GameLogic {
     getValidMoves(piece) {
         var validMoves = []
         var targetCell;
+
         // piece is red and it's red's turn
         if (this.#checkRedPiece(piece) && this.turnHandler.isRedTurn())
         {
@@ -24,12 +25,12 @@ class GameLogic {
 
             // this is the piece that is eating the other piece
             // i.e the one that the user should select
-            let eatingPiece = this.#checkHasToEat(); 
-            if (eatingPiece === piece && eatingPiece) // not null, and eat piece is the piece that is targeted
+            let eatingPieces = this.#checkHasToEat(); 
+            if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
             {
                 return [this.#checkSoldierCanEat(piece)];
             }
-            else if (eatingPiece !== piece && eatingPiece) // must eat the piece
+            else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length !== 0) // one exists that must eat the piece
             {
                 return [];
             }
@@ -65,16 +66,16 @@ class GameLogic {
 
             // this is the piece that is eating the other piece
             // i.e the one that the user should select
-            let eatingPiece = this.#checkHasToEat(); 
-            if (eatingPiece === piece && eatingPiece) // not null, and eat piece is the piece that is targeted
+            let eatingPieces = this.#checkHasToEat(); 
+            if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
             {
                 return [this.#checkSoldierCanEat(piece)];
             }
-            else if (eatingPiece !== piece && eatingPiece) // must eat the piece
+            else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length != 0) // must eat the piece
             {
                 return [];
             }
-            
+
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
@@ -108,20 +109,21 @@ class GameLogic {
 
     /**
      * Checks if one of the pieces of the current team color has to eat
-     * @returns {Piece | null}the piece that has to eat or null;
+     * @returns {[Piece] | null}the piece that has to eat or null;
      */
     #checkHasToEat()
     {
+        var mustEatPieces = [];
         var arr = this.turnHandler.isRedTurn() ? this.board.redPieces : this.board.bluePieces;
         for (let i = 0; i < arr.length; i++)
         {
             if (this.#checkSoldierCanEat(arr[i]))
             {
                 // returns the piece that has to eat
-                return arr[i];
+                mustEatPieces.push(arr[i]);
             }
         }
-        return null;
+        return mustEatPieces;
     }
     /**
      * 
