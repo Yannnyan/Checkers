@@ -16,82 +16,15 @@ class GameLogic {
      */
     getValidMoves(piece) {
         var validMoves = []
-        var targetCell;
-
-        // piece is red and it's red's turn
-        if (this.#checkRedPiece(piece) && this.turnHandler.isRedTurn())
-        {
-            // must eat mechanism
-
-            // this is the piece that is eating the other piece
-            // i.e the one that the user should select
-            let eatingPieces = this.#checkHasToEat(); 
-            if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
-            {
-                return [this.#checkSoldierCanEat(piece)];
-            }
-            else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length !== 0) // one exists that must eat the piece
-            {
-                return [];
-            }
-
-            // piece is soldier
-            if (this.#checkSoldier(piece)) 
-            {
-                targetCell = this.#checkSoldierCanEat(piece);
-                if (targetCell) 
-                {
-                    return [targetCell];
-                }
-                if (this.board.checkRelativeNotOccupied(piece, "left", "bottom"))
-                {
-                    validMoves.push(this.board.getRelativeCell(piece, "left", "bottom"));
-                }
-                if (this.board.checkRelativeNotOccupied(piece, "right", "bottom")) 
-                {
-                    validMoves.push(this.board.getRelativeCell(piece, "right", "bottom"));
-                }
-            
-            }
-            // piece is queen
-            else
-            {
-                // add cases for queen
-            }
-        }
         // piece is blue, and it's blue's turn
-        else if (!this.#checkRedPiece(piece) && !this.turnHandler.isRedTurn())
+        if (this.#checkRedPiece(piece) && this.turnHandler.isRedTurn() ||
+        !this.#checkRedPiece(piece) && !this.turnHandler.isRedTurn())
         {
-            // must eat mechanism
-
-            // this is the piece that is eating the other piece
-            // i.e the one that the user should select
-            let eatingPieces = this.#checkHasToEat(); 
-            if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
-            {
-                return [this.#checkSoldierCanEat(piece)];
-            }
-            else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length != 0) // must eat the piece
-            {
-                return [];
-            }
-
+            console.log("hello");
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
-                targetCell = this.#checkSoldierCanEat(piece);
-                if (targetCell) 
-                {
-                    return [targetCell];
-                }
-                if(this.board.checkRelativeNotOccupied(piece, "left", "top"))
-                {
-                    validMoves.push(this.board.getRelativeCell(piece, "left", "top"));
-                }
-                if (this.board.checkRelativeNotOccupied(piece, "right", "top"))
-                {
-                    validMoves.push(this.board.getRelativeCell(piece, "right", "top"));
-                }
+                validMoves.concat([this.#soldierMoves(piece)]);
             }
             // piece is queen
             else 
@@ -104,12 +37,50 @@ class GameLogic {
         
     }
 
+    #soldierMoves(piece)
+    {
+        var validMoves = [];
+        let eatingPieces = this.#checkHasToEat(); 
+        if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
+        {
+            return [this.#checkSoldierCanEat(piece)];
+        }
+        else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length != 0) // must eat the piece
+        {
+            return [];
+        }
+        if (this.#checkRedPiece(piece))
+        {
+            if (this.board.checkRelativeNotOccupied(piece, "left", "bottom"))
+            {
+                validMoves.push(this.board.getRelativeCell(piece, "left", "bottom"));
+            }
+            if (this.board.checkRelativeNotOccupied(piece, "right", "bottom")) 
+            {
+                validMoves.push(this.board.getRelativeCell(piece, "right", "bottom"));
+            }
+        }
+        else
+        {
+            if(this.board.checkRelativeNotOccupied(piece, "left", "top"))
+            {
+                validMoves.push(this.board.getRelativeCell(piece, "left", "top"));
+            }
+            if (this.board.checkRelativeNotOccupied(piece, "right", "top"))
+            {
+                validMoves.push(this.board.getRelativeCell(piece, "right", "top"));
+            }
+        }
+        return validMoves;
+
+    }
+
 
     /** Check soldier operations */
 
     /**
      * Checks if one of the pieces of the current team color has to eat
-     * @returns {[Piece] | null}the piece that has to eat or null;
+     * @returns {[Piece] | null}the pieces that have to eat or null;
      */
     #checkHasToEat()
     {
@@ -135,39 +106,19 @@ class GameLogic {
      */
     #checkSoldierCanEatRelative(piece, horizontal, vertical)
     {
-        // piece is red soldier
-        if (this.#checkRedPiece(piece)) 
+        // determine the piece color, throws exception if not red or blue
+        var targetColor = this.#checkRedPiece(piece) ? "blue" : "red";
+
+        // backwards eat
+        if (vertical === "top" && piece.color === "red" ||
+            vertical === "bottom" && piece.color === "blue")
         {
-            if (vertical === "top")
-            {
-                throw("cannot eat backwards.");
-            }
-            // bottom-left occupied by a blue piece
-            if (!this.board.checkRelativeNotOccupied(piece, horizontal, vertical)
-            && this.board.getRelativePieceColor(piece, horizontal, vertical) === "blue")
-            {
-                var targetPiece = this.board.getRelativePiece(piece, horizontal, vertical);
-                // can eat the target piece
-                if (this.board.checkRelativeNotOccupied(targetPiece, horizontal, vertical))
-                {
-                    var ret = this.board.getRelativeCell(targetPiece, horizontal, vertical);
-                    ret[2] = "eat";
-                    ret[3] = targetPiece.row;
-                    ret[4] = targetPiece.collum;
-                    return ret;
-                }
-            }
+            throw("cannot eat backwards.");
         }
-        // piece is blue soldier
-        else 
+        // bottom-left occupied by a blue piece
+        if (!this.board.checkRelativeNotOccupied(piece, horizontal, vertical))
         {
-            if (vertical === "bottom")
-            {
-                throw("cannot eat backwards");
-            }
-            // bottom-left occupied by a blue piece
-            if (!this.board.checkRelativeNotOccupied(piece, horizontal, vertical)
-            && this.board.getRelativePieceColor(piece, horizontal, vertical) === "red")
+            if (this.board.getRelativePieceColor(piece, horizontal, vertical) === targetColor)
             {
                 var targetPiece = this.board.getRelativePiece(piece, horizontal, vertical);
                 // can eat the target piece
@@ -194,74 +145,29 @@ class GameLogic {
     #checkSoldierCanEat(piece) 
     {
         var target;
-        if (this.#checkRedPiece(piece))
+        var horizontal = ["left", "right"];
+        var vertical = ["top", "bottom"];
+        for(let i = 0; i < 2; i++)
         {
             try
             {
-                target = this.#checkSoldierCanEatRelative(piece, "left", "bottom");
-                if (target)
+                // if red, check if the piece can eat downwards
+                if (this.#checkRedPiece(piece))
                 {
-                    return target;
+                    target = this.#checkSoldierCanEatRelative(piece, horizontal[i], vertical[1]);
+                    if (target) return target;
+                }
+                // if blue, check if the piece can eat upwards
+                else
+                {
+                    target = this.#checkSoldierCanEatRelative(piece, horizontal[i], vertical[0]);
+                    if (target) return target;
                 }
             }
-            // expecting exception for out of bounds
-            catch(e)
+            catch (e) // expecting out of bounds, if so it cannot eat so no need to do anything.
             {
-                if (!(e === "out-of-bounds")) // if it's not out of bounds
-                {
-                    throw(e);
-                }
+                if (!(e === "out-of-bounds")) throw(e);
             }
-            try
-            {
-                target = this.#checkSoldierCanEatRelative(piece, "right", "bottom");
-                if(target)
-                {
-                    return target;
-                }
-            }
-            catch(e)
-            {
-                if (!(e === "out-of-bounds")) // if it's not out of bounds
-                {
-                    throw(e);
-                }
-            }
-        }
-        else 
-        {
-            // expecting exception for out of bounds
-            try
-            {
-                target = this.#checkSoldierCanEatRelative(piece, "left", "top");
-                if (target)
-                {
-                    return target;
-                }
-            }
-            catch(e)
-            {
-                if (!(e === "out-of-bounds")) // if it's not out of bounds
-                {
-                    throw(e);
-                }
-            }
-            try
-            {
-                target = this.#checkSoldierCanEatRelative(piece, "right", "top");
-                if(target)
-                {
-                    return target;
-                }
-            }
-            catch(e)
-            {
-                if (!(e === "out-of-bounds")) // if it's not out of bounds
-                {
-                    throw(e);
-                }
-            }
-            
         }
         return null;
     }
@@ -294,8 +200,6 @@ class GameLogic {
         return piece.color === "red";
     }
 }
-
-
 
 
 class TurnHandler{

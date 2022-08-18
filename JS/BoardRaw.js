@@ -245,7 +245,7 @@ class BoardRaw {
             row < 0 || col < 0
             || !this.getCell(row, col))
         {
-            return false;
+            throw("out-of-bounds");
         }
         return !this.getCell(row, col).isOccupied();
     }
