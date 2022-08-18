@@ -18,7 +18,7 @@ class BoardRaw {
 
     // fills an array with pieces of certain color matched for the board specifications.
     #fillPieces(color) {
-        var pieces = [];
+        var pieces = new Map();
         var startRow = color === "red" ? 0 : 5;
         var startColForSpaced = color === "red" ? 0 : -1;
         var startColForNotSpaced = color === "red" ? 0 : 1;
@@ -27,20 +27,20 @@ class BoardRaw {
             // 1 3 5 7
             if (i < 4) {
                 var piece = new Piece(0 + startRow, i*2 + 1 + startColForSpaced, color);
-                pieces.push(piece); 
+                pieces.set(i, piece); 
                 continue;
             }
             // treat as a base case but every element has to shift one left
             // 0 2 4 6
             if (i < 8) {
                 var piece = new Piece(1 + startRow, (i-4)*2 + startColForNotSpaced, color);
-                pieces.push(piece);
+                pieces.set(i, piece);
                 continue;
             }
             // 1 3 5 7
             if (i < 12) {
                 var piece = new Piece(2 + startRow, (i-8)*2 + 1 + startColForSpaced, color);
-                pieces.push(piece);
+                pieces.set(i, piece);
             }
         }
         return pieces;
@@ -70,13 +70,13 @@ class BoardRaw {
     #ocupyCells() {
         var i;
         var piece;
-        for (i = 0; i < this.redPieces.length; i++) 
+        for (i = 0; i < this.sizeTeam; i++) 
         {
-            piece = this.redPieces[i];
+            piece = this.redPieces.get(i);
             this.cells[piece.row][piece.collum].occupy(piece);
         }
-        for (i = 0; i < this.bluePieces.length; i++) {
-            piece = this.bluePieces[i];
+        for (i = 0; i < this.sizeTeam; i++) {
+            piece = this.bluePieces.get(i);
             this.cells[piece.row][piece.collum].occupy(piece);
         }
     }
@@ -96,7 +96,7 @@ class BoardRaw {
         if (pieceId.indexOf("red") !== -1) {
            index = parseInt(pieceId.slice(9)); // redCircle 
            if(!isNaN(index)) {
-            return this.redPieces[index];
+            return this.redPieces.get(index);
            }
         }
         // blue
@@ -104,7 +104,7 @@ class BoardRaw {
             
             index = parseInt(pieceId.slice(10)); // blueCircle
             if(!isNaN(index)) {
-                return this.bluePieces[index];   
+                return this.bluePieces.get(index);   
             }
         }
         return NaN;
@@ -124,7 +124,27 @@ class BoardRaw {
         }
         return this.getCell(row, col).occupied;
     }
+    /**
+     * 
+     * @param {Piece} piece 
+     * @returns the key with which the piece is inserted into the map
+     */
+    getPieceKey(piece)
+    {
+        var pieceId = changeBoard.getPieceIdBySpec(piece.row, piece.collum);
+        var key = NaN;
+        if(pieceId.indexOf("red") !== -1)
+        {
+            key = parseInt(pieceId.slice(9)); // redCircle 
+        }
+        else
+        {
+            key = parseInt(pieceId.slice(10)); // blueCircle
+        }
+        return key;
+    }
 
+    
     /**
      * 
      * @param {Piece} piece 

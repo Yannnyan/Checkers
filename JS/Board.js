@@ -136,18 +136,20 @@ class Board extends BoardRaw{
      deletePiece(piece)
      {
         var cell = this.getCell(piece.row, piece.collum);
-        changeBoard.delPiece(cell.row, cell.col); // update view.
+        var row = cell.row;
+        var col = cell.col;
         cell.unoccupy();
         if (piece.color === "red")
         {
-            this.redPieces.splice(this.redPieces.indexOf(piece), 1);
+            this.redPieces.delete(this.getPieceKey(piece));
             console.log(this.redPieces);
         }
         else 
         {
-            this.bluePieces.splice(this.redPieces.indexOf(piece), 1);
+            this.bluePieces.delete(this.getPieceKey(piece));
             console.log(this.bluePieces);
         }
+        changeBoard.delPiece(row, col); // update view.
         
      }
 

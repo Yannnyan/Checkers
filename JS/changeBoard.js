@@ -39,6 +39,19 @@ class changeBoard {
     /**
      * 
      * @param {int} row 
+     * @param {int} col 
+     * @returns {string} the id of the piece specified
+     */
+    static getPieceIdBySpec(row, col)
+    {
+        // span with the property of the 
+        var pieceSpan = this.getCellElement(row, col).childNodes[0];
+        console.log(pieceSpan);
+        return pieceSpan.getAttribute("id");
+    }
+    /**
+     * 
+     * @param {int} row 
      * @param {int} col
      * @returns {Element} the contents of the html element of the td specified.
      */

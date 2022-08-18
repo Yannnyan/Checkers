@@ -114,13 +114,14 @@ class GameLogic {
     #checkHasToEat()
     {
         var mustEatPieces = [];
-        var arr = this.turnHandler.isRedTurn() ? this.board.redPieces : this.board.bluePieces;
-        for (let i = 0; i < arr.length; i++)
+        var map = this.turnHandler.isRedTurn() ? this.board.redPieces : this.board.bluePieces;
+        for (let i = 0; i < this.board.sizeTeam; i++)
         {
-            if (this.#checkSoldierCanEat(arr[i]))
+            if (map.has(i))
+            if (this.#checkSoldierCanEat(map.get(i)))
             {
                 // returns the piece that has to eat
-                mustEatPieces.push(arr[i]);
+                mustEatPieces.push(map.get(i));
             }
         }
         return mustEatPieces;
