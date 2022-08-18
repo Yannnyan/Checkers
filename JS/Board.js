@@ -10,10 +10,11 @@ class Board extends BoardRaw{
         this.#attachCells();
         // it is selected if the user has clicked on the piece
         this.targetedPiece = null;
+        this.lastTargetedPiece = null;
         // array that contains all the valid moves for the targeted piece
         this.validMoves = null;
         this.logic = new GameLogic(this);
-        
+        this.movesDisplayed = false;
         
     }
     /**
@@ -37,9 +38,11 @@ class Board extends BoardRaw{
      * later add function to display the relevant spots on the board
      */
     #addValidMoves()
-    {
+    {       
         if (this.targetedPiece)
+        {
             this.validMoves = this.logic.getValidMoves(this.targetedPiece);
+        }
     }
     
     /** Event Listeners */
@@ -51,18 +54,45 @@ class Board extends BoardRaw{
          */
     #targetThePiece(pieceId) {
         var tPiece = this.getPieceById(pieceId);
+        this.lastTargetedPiece = this.targetedPiece;
         this.targetedPiece = tPiece;
         this.#addValidMoves();
 
+    }
+    /**
+     * Show the indicator moves on the board
+     */
+    #showMoves()
+    {
+        if (this.movesDisplayed === false && this.validMoves)
+        {
+            this.movesDisplayed = true;
+            changeBoard.showIndicators(this.validMoves);
+        }  
+        
+    }
+    /**
+     * Clears the indicator moves from the board
+     */
+    #clearMoves()
+    {
+        // console.log(this.validMoves);
+        if (this.validMoves)
+        {
+            changeBoard.delPieces(this.validMoves);
+            this.movesDisplayed = false;
+        }
+        
     }
     /** This is the event listener that activates when the user clicks on a cell
      * 
      * @param {string} cellId 
      */
-    #clickTheCell(Id) {        
+    #clickTheCell(Id) {
         // the target is a cell
         if (Id.indexOf("c") === 0)
         {
+            this.#clearMoves();
             var cell = this.getCellById(Id);
             if (this.targetedPiece) // piece not null
             {
@@ -79,6 +109,7 @@ class Board extends BoardRaw{
                             if (this.validMoves[i][2] === "eat")
                             {
                                 this.deletePiece(this.getPiece(this.validMoves[i][3], this.validMoves[i][4]));
+                                this.validMoves = null;
                             }
                             // makes a turn after moving a piece
                             this.logic.turnHandler.makeTurn();
@@ -91,7 +122,17 @@ class Board extends BoardRaw{
         // the target is a piece
         else
         {
+            // if the last user pick was different then remove the last display and display new moves
+            if (this.movesDisplayed)
+            {
+                this.#clearMoves();
+            }
             this.#targetThePiece(Id);
+            // if valid moves are not displayed, display them
+            if (!this.movesDisplayed)
+            {
+                this.#showMoves();
+            }
         }
         
         

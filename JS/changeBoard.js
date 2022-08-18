@@ -15,6 +15,19 @@ class changeBoard {
         this.getCellElement(row, col).innerHTML = "";
         
     }
+
+    /**
+     * 
+     * @param {Array} arr array of the locations to delete
+     * for each obj in arr: obj[0]=row, obj[1]=collum
+     */
+    static delPieces(arr)
+    {
+        for (let i = 0; i < arr.length; i++)
+        {
+            this.delPiece(arr[i][0], arr[i][1]);
+        }
+    }
     /**
      * Deletes the piece from the board
      * @param {int} row 
@@ -78,7 +91,30 @@ class changeBoard {
         var idNamePref = piece.color + "Circle" + index;
         return document.getElementById(idNamePref);
     }
-
+    /**
+     * 
+     * @param {Array} location location[0] = row, location[1] = collum
+     */
+    static showIndicator(location)
+    {
+        var cell = this.getCellElement(location[0], location[1]);
+        var indicator = document.createElement("span");
+        indicator.style.pointerEvents = "none";
+        indicator.className = "indicator";
+        cell.appendChild(indicator);
+    }
+    /**
+     * Puts marks of shadow piieces indicating the user where are the valid moves.
+     * @param {Array} arr array of locations that represents where to put marks on the board.
+     * for each obj in arr : obj[0]=row, obj[1]=collum
+     */
+    static showIndicators(arr)
+    {
+        for (let i = 0; i < arr.length; i++)
+        {
+            this.showIndicator(arr[i]);
+        }
+    }
 
 }
 

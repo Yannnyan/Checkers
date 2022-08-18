@@ -60,5 +60,14 @@ span.blueCircle {
   display: inline-block;
 }
 
+span.indicator {
+  height: 25px;
+  width: 25px;
+  opacity: 0.5;
+  background-color: greenyellow;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 
 
