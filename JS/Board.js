@@ -130,7 +130,7 @@ class Board extends BoardRaw{
                 console.log(this.validMoves);
                 this.#pieceMovementByValid(cell);
                 let piece = cell.occupied;
-                if (this.logic.shouldPromote(piece)) {this.makeQueen(piece);}
+                if (piece && this.logic.shouldPromote(piece)) {this.makeQueen(piece);}
             }
             this.targetedPiece = null;
             this.validMoves = null;
