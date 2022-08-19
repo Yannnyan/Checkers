@@ -23,14 +23,14 @@ class GameLogic {
             let eatingPieces = this.#checkHasToEat();
             if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
             {
-                return this.#checkSoldier(piece) ? [this.checkSoldierCanEat(piece)] : [this.#checkQueenCanEat(piece)];
+                return this.checkSoldier(piece) ? [this.checkSoldierCanEat(piece)] : [this.checkQueenCanEat(piece)];
             }
             else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length != 0) // must eat the piece
             {
                 return [];
             }
             // piece is soldier
-            if (this.#checkSoldier(piece))
+            if (this.checkSoldier(piece))
             {
                 validMoves = this.#soldierMoves(piece);
             }
@@ -155,7 +155,7 @@ class GameLogic {
      * @param queen
      * @returns array where each member is location which must be occupied when eating the piece
      */
-    #checkQueenCanEat(piece)
+    checkQueenCanEat(piece)
     {
         var eatMoves = [];
         var horizontal = ["left", "right"];
@@ -194,7 +194,7 @@ class GameLogic {
             if (map.has(i)) // map contains the piece
             {
                 piece = map.get(i);
-                if (this.#checkSoldier(piece)) // if soldier
+                if (this.checkSoldier(piece)) // if soldier
                 {
                     if (this.checkSoldierCanEat(piece))
                     {
@@ -204,7 +204,7 @@ class GameLogic {
                 }
                 else // if queen
                 {
-                    if (this.#checkQueenCanEat(piece).length !== 0)
+                    if (this.checkQueenCanEat(piece).length !== 0)
                     {
                         mustEatPieces.push(piece);
                     }
@@ -297,7 +297,7 @@ class GameLogic {
      * @param {Piece} piece 
      * @returns if the piece is a soldier
      */
-    #checkSoldier(piece) {
+    checkSoldier(piece) {
         if (piece.role !== "normal" && piece.role !== "queen")
         {
             throw("Piece role is not normal or queen");
@@ -335,11 +335,17 @@ class TurnHandler{
      */
     makeTurn(piece, logic, eat)
     {
-        if (eat && logic.checkSoldierCanEat(piece))
+        if (eat) // if eat is true then check if the piece can eat again
         {
-            // soldier can still eat, don't switch turns
-            return;
+            // if the piece is a soldier and it can eat, or the piece is a queen and the queen can eat
+            if (logic.checkSoldier(piece) && logic.checkSoldierCanEat(piece)
+                || !logic.checkSoldier(piece) && logic.checkQueenCanEat(piece).length !== 0)
+            {
+                // soldier can still eat, don't switch turns
+                return;
+            }
         }
+            
         switch (this.turn)
         {
             case "red":

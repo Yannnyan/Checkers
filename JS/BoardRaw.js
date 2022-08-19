@@ -282,7 +282,6 @@ class BoardRaw {
      */
     getCell(row, col)
     {
-        console.log(row + " " + col + " getCell");
         if (row >= this.rows || col >= this.cols
             || row < 0 || col < 0)
         {

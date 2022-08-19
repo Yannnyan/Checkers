@@ -127,7 +127,6 @@ class Board extends BoardRaw{
             var cell = this.getCellById(Id);
             if (this.targetedPiece) // piece not null
             {
-                console.log(this.validMoves);
                 this.#pieceMovementByValid(cell);
                 let piece = cell.occupied;
                 if (piece && this.logic.shouldPromote(piece)) {this.makeQueen(piece);}
@@ -209,12 +208,10 @@ class Board extends BoardRaw{
         if (piece.color === "red")
         {
             this.redPieces.delete(this.getPieceKey(piece));
-            console.log(this.redPieces);
         }
         else 
         {
             this.bluePieces.delete(this.getPieceKey(piece));
-            console.log(this.bluePieces);
         }
         changeBoard.delPiece(row, col); // update view.
         

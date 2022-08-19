@@ -59,7 +59,6 @@ class changeBoard {
     {
         // span with the property of the 
         var pieceSpan = this.getCellElement(row, col).childNodes[0];
-        console.log(pieceSpan);
         return pieceSpan.getAttribute("id");
     }
     /**
@@ -70,7 +69,6 @@ class changeBoard {
      */
     static getCellElement(row, col)
     {
-        // console.log(row + " " + col);
         var table = document.getElementById("board");
         // notice that the first line is just characters
         // that's why skip it
@@ -97,7 +95,6 @@ class changeBoard {
      */
     static showIndicator(location)
     {
-        console.log(location);
         var cell = this.getCellElement(location[0], location[1]);
         var indicator = document.createElement("span");
         indicator.style.pointerEvents = "none";
@@ -113,9 +110,6 @@ class changeBoard {
     {
         for (let i = 0; i < arr.length; i++)
         {
-            console.log("indicator ");
-            console.log(arr);
-            console.log(arr[i]);
             this.showIndicator(arr[i]);
         }
     }
