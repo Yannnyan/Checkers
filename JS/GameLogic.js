@@ -1,5 +1,5 @@
 
-
+ /** This class represents the logic and mechanisms that reside in the game */
 
 class GameLogic {
     /**
@@ -16,15 +16,23 @@ class GameLogic {
      */
     getValidMoves(piece) {
         var validMoves = []
-        // piece is blue, and it's blue's turn
+        // piece is blue, and it's blue's turn for example
         if (this.#checkRedPiece(piece) && this.turnHandler.isRedTurn() ||
         !this.#checkRedPiece(piece) && !this.turnHandler.isRedTurn())
         {
+            let eatingPieces = this.#checkHasToEat();
+            if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
+            {
+                return this.#checkSoldier(piece) ? [this.checkSoldierCanEat(piece)] : [this.#checkQueenCanEat(piece)];
+            }
+            else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length != 0) // must eat the piece
+            {
+                return [];
+            }
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
                 validMoves = this.#soldierMoves(piece);
-                console.log(validMoves);
             }
             // piece is queen
             else 
@@ -41,16 +49,16 @@ class GameLogic {
     {
         var validMovesRelative = [];
         var addRow, addCol;
-        var row = piece.row;
-        var col = piece.collum;
+        addRow = vertical === "top" ? -1 : 1;
+        addCol = horizontal === "left" ? -1 : 1;
+        var row = piece.row + addRow;
+        var col = piece.collum + addCol;
         try
         {
             // untill the cell checked is occupied continues to add valid moves
             while (this.board.checkCellNotOccupied(row, col))
             {
                 validMovesRelative.push([row, col]);
-                addRow = horizontal === "left" ? -1 : 1;
-                addCol = vertical === "top" ? -1 : 1;
                 row += addRow;
                 col += addCol;
             }
@@ -66,7 +74,7 @@ class GameLogic {
         for (let i = 0; i < 2; i++)
             for (let j = 0; j < 2; j++)
             {
-                validMoves = validMoves.concat(this.#queenMoveRelative(piece, horizontal[i], vertical[j]));
+                validMoves = validMoves.concat(this.#queenMoveRelative(piece, horizontal[j], vertical[i]));
             }
         return validMoves;
     }
@@ -74,17 +82,8 @@ class GameLogic {
     #soldierMoves(piece)
     {
         var validMoves = [];
-        let eatingPieces = this.#checkHasToEat();
         var horizontal = ["left", "right"];
         var vertical = ["top", "bottom"];
-        if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
-        {
-            return [this.checkSoldierCanEat(piece)];
-        }
-        else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length != 0) // must eat the piece
-        {
-            return [];
-        }
         for (let i = 0; i < 2; i++)
         {
             try
@@ -108,17 +107,58 @@ class GameLogic {
     /** Check queen operations */
 
 
-
-
     /**
-     * 
-     * @returns
+     * return the location which must be occupied when eating the piece relatively
+     * @param {Piece} piece 
+     * @param {string} horizontal 
+     * @param {string} vertical 
+     * @returns {[] | null} [dest-row, dest-col, "eat", target-piece-Row, target-piece-Col]
      */
-    #checkQueenHasToEat()
+    #checkQueenCanEatRelative(piece, horizontal, vertical)
     {
-        horizontal = ["left", "right"];
-        vertical = ["top", "bottom"];
-
+        var eatColor = piece.color === "red" ? "blue" : "red";
+        var row = piece.row;
+        var col = piece.collum;
+        var addRow = vertical === "top" ? -1 : 1;
+        var addCol = horizontal === "left" ? -1 : 1;
+        row += addRow;
+        col += addCol;
+        try // expecting to go out of bounds
+        {
+            while (this.board.checkCellNotOccupied(row, col))
+            {row += addRow; col += addCol;} // continue untill find a cell occupied with a piece, or go out of bound
+            let cell = this.board.getCell(row, col);
+            let targetPiece = cell.occupied;
+            if (targetPiece.color === eatColor)
+            if (this.board.checkRelativeNotOccupied(targetPiece, horizontal, vertical))
+                return [row + addRow, col + addCol, "eat", targetPiece.row, targetPiece.collum];
+        }
+        catch (e) {if (e !== "out-of-bounds") throw (e);}
+        return null;
+    }
+    /**
+     * @param queen
+     * @returns array where each member is location which must be occupied when eating the piece
+     */
+    #checkQueenCanEat(piece)
+    {
+        var eatMoves = [];
+        var horizontal = ["left", "right"];
+        var vertical = ["top", "bottom"];
+        var i,j;
+        var eatLocation;
+        for (i = 0; i < vertical.length; i++)
+        {
+            for (j = 0; j < horizontal.length; j++)
+            {
+                eatLocation = this.#checkQueenCanEatRelative(piece, horizontal[j], vertical[i]);
+                if (eatLocation)
+                {
+                    eatMoves = eatMoves.concat(eatLocation);
+                }
+            }
+        }
+        return eatMoves;
 
     }
 
@@ -133,14 +173,29 @@ class GameLogic {
     {
         var mustEatPieces = [];
         var map = this.turnHandler.isRedTurn() ? this.board.redPieces : this.board.bluePieces;
+        var piece;
         for (let i = 0; i < this.board.sizeTeam; i++)
         {
-            if (map.has(i))
-            if (this.checkSoldierCanEat(map.get(i)))
+            if (map.has(i)) // map contains the piece
             {
-                // returns the piece that has to eat
-                mustEatPieces.push(map.get(i));
+                piece = map.get(i);
+                if (this.#checkSoldier(piece)) // if soldier
+                {
+                    if (this.checkSoldierCanEat(piece))
+                    {
+                        // returns the piece that has to eat
+                        mustEatPieces.push(piece);
+                    }
+                }
+                else // if queen
+                {
+                    if (this.#checkQueenCanEat(piece).length !== 0)
+                    {
+                        mustEatPieces.push(piece);
+                    }
+                }
             }
+            
         }
         return mustEatPieces;
     }
@@ -149,7 +204,8 @@ class GameLogic {
      * @param {*} piece 
      * @param {*} horizontal 
      * @param {*} vertical 
-     * @returns [row, col, "eat"] | null the cell that must be occupied after eat, null if it cannot eat.
+     * @returns [dest-row, dest-col, "eat", target-piece-row, target-piece-col] | null 
+     * the cell that must be occupied after eat, null if it cannot eat.
      */
     #checkSoldierCanEatRelative(piece, horizontal, vertical)
     {

@@ -15,7 +15,7 @@ class Board extends BoardRaw{
         this.validMoves = null;
         this.logic = new GameLogic(this);
         this.movesDisplayed = false;
-        // this.makeQueen(this.bluePieces.get(0));
+        this.makeQueen(this.bluePieces.get(0));
         // this.makeQueen(this.redPieces.get(11));
         
     }
@@ -131,6 +131,7 @@ class Board extends BoardRaw{
                 this.#pieceMovementByValid(cell);
             }
             this.targetedPiece = null;
+            this.validMoves = null;
         }
         // the target is a piece
         else
@@ -169,8 +170,8 @@ class Board extends BoardRaw{
      */
     makeQueen(piece)
     {
+        piece.makeQueen();
         changeBoard.changeAppearence(piece, this.getPieceKey(piece), "queen");
-
     }
 
     /** Relocation functions */

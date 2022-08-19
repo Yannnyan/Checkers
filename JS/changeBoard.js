@@ -1,4 +1,4 @@
-
+/** This class cahnges the appearence of the board */
 class changeBoard {
     constructor()
     {
@@ -97,6 +97,7 @@ class changeBoard {
      */
     static showIndicator(location)
     {
+        console.log(location);
         var cell = this.getCellElement(location[0], location[1]);
         var indicator = document.createElement("span");
         indicator.style.pointerEvents = "none";
@@ -112,6 +113,9 @@ class changeBoard {
     {
         for (let i = 0; i < arr.length; i++)
         {
+            console.log("indicator ");
+            console.log(arr);
+            console.log(arr[i]);
             this.showIndicator(arr[i]);
         }
     }
