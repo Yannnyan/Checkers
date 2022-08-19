@@ -20,7 +20,6 @@ class GameLogic {
         if (this.#checkRedPiece(piece) && this.turnHandler.isRedTurn() ||
         !this.#checkRedPiece(piece) && !this.turnHandler.isRedTurn())
         {
-            console.log("hello");
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
@@ -41,36 +40,32 @@ class GameLogic {
     #soldierMoves(piece)
     {
         var validMoves = [];
-        let eatingPieces = this.#checkHasToEat(); 
+        let eatingPieces = this.#checkHasToEat();
+        var horizontal = ["left", "right"];
+        var vertical = ["top", "bottom"];
         if (eatingPieces.indexOf(piece) !== -1) // not null, and eat piece is the piece that is targeted
         {
-            return [this.#checkSoldierCanEat(piece)];
+            return [this.checkSoldierCanEat(piece)];
         }
         else if (eatingPieces.indexOf(piece) === -1 && eatingPieces.length != 0) // must eat the piece
         {
             return [];
         }
-        if (this.#checkRedPiece(piece))
+        for (let i = 0; i < 2; i++)
         {
-            if (this.board.checkRelativeNotOccupied(piece, "left", "bottom"))
+            try
             {
-                validMoves.push(this.board.getRelativeCell(piece, "left", "bottom"));
-            }
-            if (this.board.checkRelativeNotOccupied(piece, "right", "bottom")) 
-            {
-                validMoves.push(this.board.getRelativeCell(piece, "right", "bottom"));
-            }
-        }
-        else
-        {
-            if(this.board.checkRelativeNotOccupied(piece, "left", "top"))
-            {
-                validMoves.push(this.board.getRelativeCell(piece, "left", "top"));
-            }
-            if (this.board.checkRelativeNotOccupied(piece, "right", "top"))
-            {
-                validMoves.push(this.board.getRelativeCell(piece, "right", "top"));
-            }
+                if (this.#checkRedPiece(piece)) // red piece
+                {
+                if (this.board.checkRelativeNotOccupied(piece, horizontal[i], vertical[1])) // check if bottom right or left is avail
+                    validMoves.push(this.board.getRelativeCell(piece, horizontal[i], vertical[1]));
+                }
+                else // blue piece
+                if (this.board.checkRelativeNotOccupied(piece, horizontal[i], vertical[0]))  //check if top right or left is avail
+                    validMoves.push(this.board.getRelativeCell(piece, horizontal[i], vertical[0]));
+            } // expecting out of bounds, at this case we are not doing anything, since that move is invalid.
+            catch (e) {if(e !== "out-of-bounds") throw(e);}
+            
         }
         return validMoves;
 
@@ -90,7 +85,7 @@ class GameLogic {
         for (let i = 0; i < this.board.sizeTeam; i++)
         {
             if (map.has(i))
-            if (this.#checkSoldierCanEat(map.get(i)))
+            if (this.checkSoldierCanEat(map.get(i)))
             {
                 // returns the piece that has to eat
                 mustEatPieces.push(map.get(i));
@@ -143,7 +138,7 @@ class GameLogic {
      * if the piece can eat returns the cell that must be occupied after the eat, and the cell that must be eaten
      *  otherwise return null.
      */
-    #checkSoldierCanEat(piece) 
+    checkSoldierCanEat(piece) 
     {
         var target;
         var horizontal = ["left", "right"];
@@ -167,7 +162,7 @@ class GameLogic {
             }
             catch (e) // expecting out of bounds, if so it cannot eat so no need to do anything.
             {
-                if (!(e === "out-of-bounds")) throw(e);
+                if (e !== "out-of-bounds") throw(e);
             }
         }
         return null;
@@ -208,9 +203,21 @@ class TurnHandler{
     {
         this.turn = "blue";
     }
-    // makes a turn, switching the current turn to opposite color
-    makeTurn()
+    // 
+    /** Makes a turn, switching the current turn to opposite color
+     * 
+     * @param {Piece} piece that made the last eat, if the piece aet, then it will eat again because
+     *  of the must eat mechanism.
+     * @param {GameLogic} logic of the board
+     * @param {Boolean} eat did the piece eat in that turn.
+     */
+    makeTurn(piece, logic, eat)
     {
+        if (eat && logic.checkSoldierCanEat(piece))
+        {
+            // soldier can still eat, don't switch turns
+            return;
+        }
         switch (this.turn)
         {
             case "red":

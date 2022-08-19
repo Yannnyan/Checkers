@@ -84,6 +84,35 @@ class Board extends BoardRaw{
         }
         
     }
+    /**
+     * Assumes that the piece is selected.
+     * This function makes the user move happen if it's valid.
+     * @param {Cell} cell 
+     */
+    #pieceMovementByValid(cell)
+    {
+        var didEat = false;
+        if (this.validMoves.length != 0)
+        {
+            // iterates through each valid move
+            for(let i = 0; i < this.validMoves.length; i++)
+            // user selected cell is in valid moves array, then move it
+            if (cell.row === this.validMoves[i][0] && cell.col === this.validMoves[i][1])
+            {
+                this.movePiece(this.targetedPiece, cell);
+                // check eat flag, if it's on then delete the eaten piece
+                if (this.validMoves[i][2] === "eat")
+                {
+                    this.deletePiece(this.getPiece(this.validMoves[i][3], this.validMoves[i][4]));
+                    this.validMoves = null;
+                    didEat = true;
+                }
+                // makes a turn after moving a piece
+                this.logic.turnHandler.makeTurn(this.getPiece(cell.row, cell.col), this.logic, didEat);
+                break;
+            }
+        }
+    }
     /** This is the event listener that activates when the user clicks on a cell
      * 
      * @param {string} cellId 
@@ -97,25 +126,7 @@ class Board extends BoardRaw{
             if (this.targetedPiece) // piece not null
             {
                 console.log(this.validMoves);
-                if (this.validMoves.length != 0)
-                {
-                    // iterates through each valid move
-                    for(let i = 0; i < this.validMoves.length; i++)
-                        // user selected cell is in valid moves array, then move it
-                        if (cell.row === this.validMoves[i][0] && cell.col === this.validMoves[i][1])
-                        {
-                            this.movePiece(this.targetedPiece, cell);
-                            // check eat flag, if it's on then delete the eaten piece
-                            if (this.validMoves[i][2] === "eat")
-                            {
-                                this.deletePiece(this.getPiece(this.validMoves[i][3], this.validMoves[i][4]));
-                                this.validMoves = null;
-                            }
-                            // makes a turn after moving a piece
-                            this.logic.turnHandler.makeTurn();
-                            break;
-                        }
-                }
+                this.#pieceMovementByValid(cell);
             }
             this.targetedPiece = null;
         }
