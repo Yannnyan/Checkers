@@ -11,7 +11,7 @@ class GameLogic {
         this.turnHandler = new TurnHandler();
     }
     /**
-     * 
+     * Returns all the valid moves for the piece in an array, if there aren't then return an empty array
      * @param {Piece} piece 
      */
     getValidMoves(piece) {
@@ -24,7 +24,8 @@ class GameLogic {
             // piece is soldier
             if (this.#checkSoldier(piece))
             {
-                validMoves.concat([this.#soldierMoves(piece)]);
+                validMoves = this.#soldierMoves(piece);
+                console.log(validMoves);
             }
             // piece is queen
             else 
