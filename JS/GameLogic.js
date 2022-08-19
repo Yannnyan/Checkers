@@ -45,6 +45,21 @@ class GameLogic {
         
     }
 
+    shouldPromote(piece)
+    {
+        if (this.#checkRedPiece(piece))
+        {
+            // if a red piece got to the last row (i.e row 7)
+            if (piece.row === this.board.rows - 1) return true;
+            return false;
+        }
+        else 
+        {
+            // if a blue piece got to the first row (i.e row 0)
+            if (piece.row === 0) return true;
+            return false;
+        }
+    }
     #queenMoveRelative(piece, horizontal, vertical)
     {
         var validMovesRelative = [];

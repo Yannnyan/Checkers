@@ -15,7 +15,7 @@ class Board extends BoardRaw{
         this.validMoves = null;
         this.logic = new GameLogic(this);
         this.movesDisplayed = false;
-        this.makeQueen(this.bluePieces.get(0));
+        // this.makeQueen(this.bluePieces.get(0));
         // this.makeQueen(this.redPieces.get(11));
         
     }
@@ -129,6 +129,8 @@ class Board extends BoardRaw{
             {
                 console.log(this.validMoves);
                 this.#pieceMovementByValid(cell);
+                let piece = cell.occupied;
+                if (this.logic.shouldPromote(piece)) {this.makeQueen(piece);}
             }
             this.targetedPiece = null;
             this.validMoves = null;
