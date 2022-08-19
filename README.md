@@ -1,9 +1,9 @@
 # Checkers
 ## Goals
-- Complete client side offline UI
-  - Complete View
-  - Complete board-Control
-  - Complete Logic
+- <s> Complete client side offline UI </s>
+  - <s> Complete View </s>
+  - <s> Complete board-Control </s>
+  - <s> Complete Logic </s>
 - Complete option bar redirection for offline UI or online UI
 - Complete Server side CGI for multiplayer 
 - Reconstruct the project so it fits both online mode and offline mode.
