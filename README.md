@@ -23,4 +23,6 @@
 
 ### Queen movement
 ![image](https://user-images.githubusercontent.com/82415308/185566315-922386bd-e2eb-416d-8ade-ae9da4a77313.png)
+![image](https://user-images.githubusercontent.com/82415308/185582360-8010c581-7bd0-48ac-aa5d-c53ee6e2b951.png)
+
 
