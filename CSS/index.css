@@ -69,5 +69,15 @@ span.indicator {
   display: inline-block;
 }
 
+span.blueQueen {
+    background: url("images/blueCrown.png");
+    background-repeat: no-repeat;
+    background-size: 25px 25px;
+}
 
+span.redQueen {
+    background: url("images/redCrown1.png");
+    background-repeat: no-repeat;
+    background-size: 25px 25px;
+}
 

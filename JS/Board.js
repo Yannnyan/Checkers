@@ -15,6 +15,8 @@ class Board extends BoardRaw{
         this.validMoves = null;
         this.logic = new GameLogic(this);
         this.movesDisplayed = false;
+        // this.makeQueen(this.bluePieces.get(0));
+        // this.makeQueen(this.redPieces.get(11));
         
     }
     /**
@@ -160,7 +162,17 @@ class Board extends BoardRaw{
             this.#clickTheCell(e.target.id);
         });
     }
-    
+    /** Promotion */
+    /**
+     * Makes the piece a queen
+     * @param {Piece} piece 
+     */
+    makeQueen(piece)
+    {
+        changeBoard.changeAppearence(piece, this.getPieceKey(piece), "queen");
+
+    }
+
     /** Relocation functions */
 
     /**

@@ -116,6 +116,23 @@ class changeBoard {
         }
     }
 
+    /**
+     * Changes the piece appearence based on it's role.
+     * @param {Piece} piece 
+     * @param {int} index of the piece
+     * @param {string} role 
+     */
+    static changeAppearence(piece, index, role)
+    {
+        if (role === "queen")
+        {
+            if (piece.color === "blue")
+                this.getPieceElement(piece, index).className += " blueQueen";
+            else if (piece.color === "red")
+                this.getPieceElement(piece, index).className += " redQueen";
+            
+        }
+    }
 }
 
 

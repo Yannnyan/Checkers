@@ -29,12 +29,46 @@ class GameLogic {
             // piece is queen
             else 
             {
-                // add cases for queen.
+                validMoves = this.#queenMoves(piece);
             }
         }
         return validMoves;
        
         
+    }
+
+    #queenMoveRelative(piece, horizontal, vertical)
+    {
+        var validMovesRelative = [];
+        var addRow, addCol;
+        var row = piece.row;
+        var col = piece.collum;
+        try
+        {
+            // untill the cell checked is occupied continues to add valid moves
+            while (this.board.checkCellNotOccupied(row, col))
+            {
+                validMovesRelative.push([row, col]);
+                addRow = horizontal === "left" ? -1 : 1;
+                addCol = vertical === "top" ? -1 : 1;
+                row += addRow;
+                col += addCol;
+            }
+        }
+        catch (e) {if (e !== "out-of-bounds") throw e;}
+       return validMovesRelative;
+    }
+    #queenMoves(piece)
+    {
+        var validMoves = [];
+        var horizontal = ["left", "right"];
+        var vertical = ["top", "bottom"];
+        for (let i = 0; i < 2; i++)
+            for (let j = 0; j < 2; j++)
+            {
+                validMoves = validMoves.concat(this.#queenMoveRelative(piece, horizontal[i], vertical[j]));
+            }
+        return validMoves;
     }
 
     #soldierMoves(piece)
@@ -68,6 +102,23 @@ class GameLogic {
             
         }
         return validMoves;
+
+    }
+
+    /** Check queen operations */
+
+
+
+
+    /**
+     * 
+     * @returns
+     */
+    #checkQueenHasToEat()
+    {
+        horizontal = ["left", "right"];
+        vertical = ["top", "bottom"];
+
 
     }
 
